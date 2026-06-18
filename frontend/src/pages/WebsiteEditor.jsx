@@ -44,10 +44,13 @@ const WebsiteEditor = () => {
     }, [updateLoading])
 
     const handleUpdate = async () => {
-        setMessages((m) => [...m, { role: "user", content: prompt }])
+        if (!prompt.trim()) return;
+        const currentPrompt = prompt;
+        setPrompt("");
+        setMessages((m) => [...m, { role: "user", content: currentPrompt }])
         setUpdateLoading(true)
         try {
-            const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/website/update/${id}`, { prompt }, { withCredentials: true })
+            const result = await axios.post(`${import.meta.env.VITE_SERVER_URL}/api/website/update/${id}`, { prompt: currentPrompt }, { withCredentials: true })
             setMessages((m) => [...m, { role: "ai", content: result.data.message }])
             setCode(result.data.code)
         } catch (error) {
@@ -111,14 +114,26 @@ const WebsiteEditor = () => {
                     </div>
 
                     <div className='p-3 border-t border-white/10'>
-                        <div className='flex gap-2'>
+                        <div className='flex gap-2 items-center'>
                             <textarea
                                 value={prompt}
                                 onChange={(e) => setPrompt(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleUpdate();
+                                    }
+                                }}
                                 rows={1}
                                 placeholder='Describe changes...'
-                                className='flex-1 resize-none rounded-2xl px-4 py-3 bg-white/5 border border-white/10 text-outline-none' />
-                            <button disabled={updateLoading} onClick={handleUpdate} className='px-4 py-3 rounded-2xl bg-white text-black'><Send size={18} /></button>
+                                className='flex-1 resize-none rounded-xl px-4 py-3 bg-white/5 border border-white/10 focus:border-white/30 focus:outline-none text-white text-sm placeholder-zinc-500 transition-all scrollbar-none' />
+                            <button 
+                                disabled={updateLoading || !prompt.trim()} 
+                                onClick={handleUpdate} 
+                                className='p-3 rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:hover:bg-white transition flex items-center justify-center'
+                            >
+                                <Send size={18} />
+                            </button>
                         </div>
                     </div>
                 </>
@@ -169,14 +184,26 @@ const WebsiteEditor = () => {
                             </div>
 
                             <div className='p-3 border-t border-white/10'>
-                                <div className='flex gap-2'>
+                                <div className='flex gap-2 items-center'>
                                     <textarea
                                         value={prompt}
                                         onChange={(e) => setPrompt(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleUpdate();
+                                            }
+                                        }}
                                         rows={1}
                                         placeholder='Describe changes...'
-                                        className='flex-1 resize-none rounded-2xl px-4 py-3 bg-white/5 border border-white/10 text-outline-none' />
-                                    <button disabled={updateLoading} onClick={handleUpdate} className='px-4 py-3 rounded-2xl bg-white text-black'><Send size={18} /></button>
+                                        className='flex-1 resize-none rounded-xl px-4 py-3 bg-white/5 border border-white/10 focus:border-white/30 focus:outline-none text-white text-sm placeholder-zinc-500 transition-all scrollbar-none' />
+                                    <button 
+                                        disabled={updateLoading || !prompt.trim()} 
+                                        onClick={handleUpdate} 
+                                        className='p-3 rounded-xl bg-white text-black hover:bg-zinc-200 disabled:opacity-50 disabled:hover:bg-white transition flex items-center justify-center'
+                                    >
+                                        <Send size={18} />
+                                    </button>
                                 </div>
                             </div>
                         </>

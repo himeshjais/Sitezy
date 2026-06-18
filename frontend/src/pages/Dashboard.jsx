@@ -1,4 +1,4 @@
-import { ArrowLeft, Check, Rocket, Share2 } from "lucide-react";
+import { ArrowLeft, Check, Rocket, Share2, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from 'motion/react'
 import {  useNavigate } from "react-router-dom";
@@ -11,6 +11,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
   const [copiedId, setCopiedId] = useState(null)
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null)
   const { userData } = useSelector(state => state.user)
 
   const handleDeploy = async (id) => {
@@ -44,6 +45,18 @@ function Dashboard() {
       setCopiedId(site._id)
       setTimeout(()=>setCopiedId(null), 2000)
   }
+
+  const handleDeleteSubmit = async (id) => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_SERVER_URL}/api/website/delete/${id}`, { withCredentials: true })
+      setWebsites((prev) => prev.filter((w) => w._id !== id))
+      setDeleteConfirmId(null)
+    } catch (error) {
+      console.log(error)
+      setError("Failed to delete website. Please try again.")
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#050505] text-white">
       {/* header */}
@@ -86,13 +99,56 @@ function Dashboard() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                whileHover={{ y: -6 }}
-                onClick={()=>navigate(`/editor/${w._id}`)}
-                className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:bg-white/10 transition flex flex-col "
+                whileHover={deleteConfirmId === w._id ? {} : { y: -6 }}
+                onClick={()=> {
+                  if (deleteConfirmId !== w._id) {
+                    navigate(`/editor/${w._id}`)
+                  }
+                }}
+                className="relative rounded-2xl bg-white/5 border border-white/10 overflow-hidden hover:bg-white/10 transition flex flex-col min-h-[320px]"
               >
+                {deleteConfirmId === w._id && (
+                  <div className="absolute inset-0 bg-black/95 z-20 flex flex-col items-center justify-center p-6 text-center">
+                    <Trash2 size={32} className="text-red-500 mb-3 animate-pulse" />
+                    <h4 className="font-semibold text-base mb-1 text-white">Delete Website?</h4>
+                    <p className="text-xs text-zinc-400 mb-6 leading-relaxed">
+                      Are you sure you want to delete "{w.title}"? This action cannot be undone.
+                    </p>
+                    <div className="flex gap-3 w-full">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteConfirmId(null);
+                        }}
+                        className="flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white transition-all duration-200 border border-white/10"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteSubmit(w._id);
+                        }}
+                        className="flex-1 py-2 px-3 rounded-xl text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition-all duration-200"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div className="relative h-40 bg-black cursor-pointer">
                   <iframe srcDoc={w.latestCode} className="absolute inset-0 w-[140%] h-[140%] scale-[0.72] origin-top-left pointer-events-none bg-white" />
                   <div className="absolute inset-0 bg-black/30" />
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setDeleteConfirmId(w._id);
+                    }}
+                    className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-red-600/90 text-white rounded-lg transition-all duration-200 border border-white/10 hover:border-red-500/30 z-10"
+                    title="Delete Website"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div> 
                 <div className="p-5 flex flex-col gap-4 flex-1">
                   <h3 className="text-base font-semibold line-clamp-2">{w.title}</h3>

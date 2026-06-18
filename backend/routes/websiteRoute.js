@@ -7,6 +7,7 @@ import {
   getAllWebsite,
   getBySlug,
   getWebsiteById,
+  deleteWebsite,
 } from "../controllers/websiteControllers.js";
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get("/getbyid/:id", isAuthenticated, getWebsiteById);
 router.get("/getall", isAuthenticated, getAllWebsite);
 router.get("/deploy/:id", isAuthenticated, deployWebsite);
 router.get("/getbyslug/:slug", isAuthenticated, getBySlug);
+router.delete("/delete/:id", isAuthenticated, deleteWebsite);
 
 export default router;
