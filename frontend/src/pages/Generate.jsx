@@ -61,14 +61,16 @@ const Generate = () => {
     const interval = setInterval(() => {
       const increment =
         value < 20
-          ? Math.random() * 1.5
+          ? Math.random() * 2.5
           : value < 60
-            ? Math.random() * 1.2
-            : Math.random() * 0.6;
+            ? Math.random() * 1.8
+            : value < 85
+              ? Math.random() * 1.0
+              : Math.random() * 0.3;
 
       value += increment;
 
-      if (value >= 93) value = 93;
+      if (value >= 97) value = 97;
 
       phase = Math.min(
         Math.floor((value / 100) * PHASES.length),
@@ -77,7 +79,7 @@ const Generate = () => {
 
       setProgress(Math.floor(value));
       setPhaseIndex(phase);
-    }, 1200);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [loading]);
@@ -188,7 +190,7 @@ const Generate = () => {
 
             <div className="text-center text-xs text-zinc-400 mt-4">
               Estimated time remaining:{" "}
-              <span className="text-white font-medium">~8-12 minutes</span>
+              <span className="text-white font-medium">~1-3 minutes</span>
             </div>
           </motion.div>
         )}

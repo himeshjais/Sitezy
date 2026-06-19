@@ -78,6 +78,31 @@ IMAGES (MANDATORY & RESPONSIVE)
   - Never overflow containers
 
 --------------------------------------------------
+WEBSITE TYPE — ADAPT AUTOMATICALLY
+--------------------------------------------------
+Read the USER REQUIREMENT and identify the type of website.
+Then apply the matching design language:
+
+- GAMING / ESPORTS → Dark neon theme (cyan/green/purple glows), futuristic font style, game screenshots, leaderboards, hero with animated gradient background, glow effects on cards
+- ECOMMERCE / SHOP / STORE / PRODUCT → Clean product grid, cart icons, pricing cards, promo banners, product images, add-to-cart buttons, sale badges
+- RESTAURANT / FOOD / CAFE / BAR → Warm rich colors (amber/orange/red), food photography, menu sections, reservation form, chef specials
+- PORTFOLIO / PERSONAL → Minimal elegant, project showcase grid, skills section, timeline, contact form, about section
+- AGENCY / STARTUP / SAAS → Bold gradients, feature cards, pricing table, testimonials, CTA sections, hero animation
+- BLOG / NEWS / MAGAZINE → Article card grid, category filters, featured post hero, author info, newsletter signup
+- FITNESS / GYM / SPORTS → High-energy dark theme, class schedules, trainer profiles, transformation photos, membership plans
+- EDUCATION / COURSE / SCHOOL → Clean academic, course cards, instructor profiles, curriculum accordion, enrollment CTA
+- MEDICAL / CLINIC / HEALTH → Professional blue/white, appointment booking, doctor profiles, services list, trust badges
+- REAL ESTATE / PROPERTY → Property card grid, search filters, agent profiles, property details
+- TRAVEL / HOTEL / TOURISM → Full-width destination hero, destination cards, booking form, tour packages, reviews
+- MUSIC / BAND / ARTIST → Dark moody theme, album covers, tour dates, media player UI, merch section
+- TECHNOLOGY / SOFTWARE / APP → Gradient hero, feature highlights, app screenshots, integrations, pricing
+
+If the type is unclear → use a premium modern agency/business style as default.
+
+APPLY THE CORRECT COLOR PALETTE, TYPOGRAPHY STYLE, AND CONTENT
+BASED ON THE DETECTED WEBSITE TYPE ABOVE. DO NOT USE GENERIC DEFAULTS.
+
+--------------------------------------------------
 TECHNICAL RULES (VERY IMPORTANT)
 --------------------------------------------------
 - Output ONE single HTML file
@@ -90,47 +115,79 @@ TECHNICAL RULES (VERY IMPORTANT)
 - No page reloads
 - No dead UI
 - No broken buttons
---------------------------------------------------
-SPA VISIBILITY RULE (MANDATORY)
---------------------------------------------------
-- Pages MUST NOT be hidden permanently
-- If .page { display: none } is used,
-  then .page.active { display: block } is REQUIRED
-- At least ONE page MUST be visible on initial load
-- Hiding all content is INVALID
 
+--------------------------------------------------
+⚠️ SPA VISIBILITY RULE — THIS IS THE #1 MOST CRITICAL RULE ⚠️
+--------------------------------------------------
+THE HOME PAGE MUST BE FULLY VISIBLE AND FILLED WITH CONTENT
+IMMEDIATELY WHEN THE PAGE LOADS — NO USER ACTION REQUIRED.
+
+MANDATORY IMPLEMENTATION — FOLLOW EXACTLY:
+
+STEP 1 — HTML structure:
+  <section id="home" class="page active">  ← HOME MUST HAVE "active" class in HTML
+  <section id="about" class="page">
+  <section id="services" class="page">
+  <section id="contact" class="page">
+
+STEP 2 — CSS rules (BOTH required):
+  .page { display: none; }
+  .page.active { display: block; }
+
+STEP 3 — JavaScript navigation function:
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.querySelector('nav a[data-page="'+id+'"]').classList.add('active');
+  }
+
+STEP 4 — Nav links must use data-page and onclick:
+  <a href="#" data-page="home" class="nav-link active" onclick="showPage('home'); return false;">Home</a>
+  <a href="#" data-page="about" class="nav-link" onclick="showPage('about'); return false;">About</a>
+
+FORBIDDEN:
+  ❌ Do NOT use style="display:none" or style="display:block" to toggle pages
+  ❌ Do NOT use inline display toggling in JS
+  ❌ Do NOT leave Home page without class="page active" in HTML
+  ❌ Do NOT hide all pages — at least Home must be visible on load
+
+IF HOME PAGE IS BLANK OR EMPTY ON LOAD → RESPONSE IS COMPLETELY INVALID.
 
 --------------------------------------------------
 REQUIRED SPA PAGES
 --------------------------------------------------
-- Home
-- About
-- Services / Features
-- Contact
+- Home     (id="home"     class="page active") ← MUST have "active" on load
+- About    (id="about"    class="page")
+- Services (id="services" class="page") — rename to match website type (Products, Menu, Games, Courses, etc.)
+- Contact  (id="contact"  class="page")
 
 --------------------------------------------------
 FUNCTIONAL REQUIREMENTS
 --------------------------------------------------
-- Navigation must switch pages using JS
-- Active nav state must update
-- Forms must have JS validation
-- Buttons must show hover + active states
-- Smooth section/page transitions
+- Navigation must switch pages using JS showPage() function
+- Active nav state must update visually on click
+- Forms must have client-side JS validation
+- Buttons must show hover + active CSS states
+- Smooth page transitions (CSS opacity/transform transition recommended)
 
 --------------------------------------------------
-FINAL SELF-CHECK (MANDATORY)
+FINAL SELF-CHECK (MANDATORY — DO THIS BEFORE OUTPUTTING)
 --------------------------------------------------
-BEFORE RESPONDING, ENSURE:
+CHECK EACH ITEM:
 
-1. Layout works on mobile, tablet, desktop
-2. No horizontal scroll on mobile
-3. All images are responsive
-4. All sections adapt properly
-5. Media queries are present and used
-6. Navigation works on all screen sizes
-7. At least ONE page is visible without user interaction
+✅ 1. Home section has class="page active" in the HTML — CHECK THIS FIRST
+✅ 2. CSS has both: .page{display:none} AND .page.active{display:block}
+✅ 3. Layout works on mobile, tablet, desktop
+✅ 4. No horizontal scroll on mobile
+✅ 5. All images from unsplash with proper params
+✅ 6. All images are responsive (max-width:100%)
+✅ 7. Media queries present and working
+✅ 8. Navigation JS function toggles .active class correctly
+✅ 9. Website type design language applied (gaming=neon, food=warm, etc.)
+✅ 10. Content is specific to the user's request — NO generic lorem ipsum
 
-IF ANY CHECK FAILS → RESPONSE IS INVALID
+IF ANY CHECK FAILS → FIX IT BEFORE RESPONDING. DO NOT OUTPUT AN INVALID RESPONSE.
 
 --------------------------------------------------
 OUTPUT FORMAT (RAW JSON ONLY)
